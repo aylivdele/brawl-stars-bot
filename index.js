@@ -1,42 +1,65 @@
-import express from "express";
-import morgan from "morgan";
-import cors from "cors";
-import * as dotenv from "dotenv";
+// Require the necessary discord.js classes
+const { Client, Events, GatewayIntentBits, Collection} = require('discord.js');
+const dotenv = require("dotenv");
+const registerCommands = require("./commands/register/registerCommands");
+const getCommands = require("./commands/register/getCommands");
+const fs = require('node:fs');
+const path = require('node:path');
+
 
 dotenv.config();
 
-const app = express();
-app.use(morgan('tiny'));
-app.use(cors());
+const token = process.env.DS_TOKEN;
+const clientId = process.env.clientId;
+const guildId = process.env.guildId;
 
-app.get('/ds', (req, res) => {
-    res.send();
-});
+// Create a new client instance
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-app.get('/tg', (req, res) => {
-    res.status(200);
-    res.send();
-})
+client.commands = new Collection();
 
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
-function notFound(req, res, next) {
-    res.status(404);
-    const error = new Error('Not Found');
-    next(error);
+for (const file of commandFiles) {
+    const filePath = path.join(commandsPath, file);
+    const command = require(filePath);
+    // Set a new item in the Collection with the key as the command name and the value as the exported module
+    if ('data' in command && 'execute' in command) {
+        client.commands.set(command.data.name, command);
+    } else {
+        console.log(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
+    }
 }
 
-function errorHandler(error, req, res, next) {
-    console.error(error);
-    res.status(res.statusCode || 500);
-    res.json({
-        message: error.message
-    });
-}
-
-app.use(notFound);
-app.use(errorHandler);
-
-const port = process.env.PORT || 8080;
-app.listen(port, () => {
-    console.log('Listening on port', port);
+// When the client is ready, run this code (only once)
+// We use 'c' for the event parameter to keep it separate from the already defined 'client'
+client.once(Events.ClientReady, c => {
+    console.log(`Ready! Logged in as ${c.user.tag}`);
 });
+
+client.on(Events.InteractionCreate, async interaction => {
+    if (!interaction.isChatInputCommand()) return;
+
+    const command = interaction.client.commands.get(interaction.commandName);
+
+    if (!command) {
+        console.error(`No command matching ${interaction.commandName} was found.`);
+        return;
+    }
+
+    try {
+        await command.execute(interaction);
+    } catch (error) {
+        console.error(error);
+        if (interaction.replied || interaction.deferred) {
+            await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+        } else {
+            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+        }
+    }
+});
+
+// Log in to Discord with your client's token
+client.login(token)
+    .then(() => registerCommands(getCommands(), token, clientId, guildId));
