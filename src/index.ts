@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, Collection, PermissionFlagsBits,} from "discord.js";
+import {Client, GatewayIntentBits, Collection, PermissionFlagsBits, PresenceData, ClientPresence,} from "discord.js";
 const { Guilds, MessageContent, GuildMessages, GuildMembers } = GatewayIntentBits
 const client = new Client({intents:[Guilds, MessageContent, GuildMessages, GuildMembers]})
 import { Command, SlashCommand } from "./types";
@@ -23,3 +23,9 @@ try {
 
 console.log('Logging')
 client.login(process.env.TOKEN)
+    .then(() => client.user?.setPresence({status: 'online', activities: [{ name: 'Brawl stars', type: 0 }]}))
+    .catch(error => {
+    console.error('Login exception');
+    console.error(error);
+})
+
