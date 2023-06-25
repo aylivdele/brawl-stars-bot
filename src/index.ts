@@ -5,6 +5,8 @@ import { Command, SlashCommand } from "./types";
 import { config } from "dotenv";
 import { readdirSync } from "fs";
 import { join } from "path";
+import Avatar from './static/HankAvatar.png'
+
 config()
 
 client.slashCommands = new Collection<string, SlashCommand>()
@@ -23,7 +25,8 @@ try {
 
 console.log('Logging')
 client.login(process.env.TOKEN)
-    .then(() => client.user?.setPresence({status: 'online', activities: [{ name: 'Brawl stars', type: 0 }]}))
+    .then(() => client.user?.setPresence({activities: [{ name: 'Brawl stars', type: 0 }]}))
+    .then(() => client.user?.setAvatar(Avatar))
     .catch(error => {
     console.error('Login exception');
     console.error(error);
