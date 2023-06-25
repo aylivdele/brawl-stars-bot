@@ -5,7 +5,6 @@ import { Command, SlashCommand } from "./types";
 import { config } from "dotenv";
 import { readdirSync } from "fs";
 import { join } from "path";
-import Avatar from './static/HankAvatar.png'
 
 config()
 
@@ -26,7 +25,7 @@ try {
 console.log('Logging')
 client.login(process.env.TOKEN)
     .then(() => client.user?.setPresence({activities: [{ name: 'Brawl stars', type: 0 }]}))
-    .then(() => client.user?.setAvatar(Avatar))
+    .then(() => client.user?.setAvatar(join(__dirname, 'static/HankAvatar.png')))
     .catch(error => {
     console.error('Login exception');
     console.error(error);
