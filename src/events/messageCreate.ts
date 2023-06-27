@@ -2,12 +2,45 @@ import { ChannelType, Message } from "discord.js";
 import { checkPermissions, getGuildOption, sendTimedMessage } from "../functions";
 import { BotEvent } from "../types";
 import mongoose from "mongoose";
+import {
+    ASK_FOR_INVITE_MESSAGE,
+    ASK_ID_MESSAGE,
+    NOT_MEMBER_MESSAGE,
+    WAIT_FOR_APPROVE_MESSAGE
+} from "../messages/messages";
+import {join} from "path";
+import {ClubMembersList} from "../types/BrawlStarsAPIModel";
 
 const event: BotEvent = {
     name: "messageCreate",
     execute: async (message: Message) => {
-        if (!message.member || message.member.user.bot) return;
-        if (!message.guild) return;
+        console.log(message.id + ' New message: ' + message.content);
+        if (message.author.bot) return;
+        if (!message.guild && message.author.dmChannel) {       //TODO проверить состоит ли автор в дискорд канале
+            console.log(message.id + ' Not a guild message');
+            const author = message.author;
+            const dmChannel = author.dmChannel!;
+            const brawlId = message.content.toUpperCase().match(/^#[A-Z\d]{8}$/)?.[0];
+
+            if (!brawlId) {
+                console.log('no brawl id');
+                await dmChannel.send({ content: ASK_FOR_INVITE_MESSAGE, files: [ join(__dirname, '../static/AskIdImage.jpg') ]}).then(console.log, console.error);
+                return;
+            } else {
+                const members : ClubMembersList = [];//TODO запрос к BrawlStartAPI /clubs/{clubTag}/members
+                const member = members.find(member => member.tag === brawlId);
+                if (!member) {
+                    dmChannel.send(NOT_MEMBER_MESSAGE);
+                    return;
+                } else {
+                    dmChannel.send(WAIT_FOR_APPROVE_MESSAGE);
+                    return;
+                }
+            }
+
+            return;
+        }
+        if (!message.guild || !message.member) return;
         let prefix = process.env.PREFIX
         if (mongoose.connection.readyState === 1) {
             let guildPrefix = await getGuildOption(message.guild, "prefix") 

@@ -1,10 +1,11 @@
-import {Client, GatewayIntentBits, Collection, PermissionFlagsBits, PresenceData, ClientPresence,} from "discord.js";
-const { Guilds, MessageContent, GuildMessages, GuildMembers } = GatewayIntentBits
-const client = new Client({intents:[Guilds, MessageContent, GuildMessages, GuildMembers]})
-import { Command, SlashCommand } from "./types";
-import { config } from "dotenv";
-import { readdirSync } from "fs";
-import { join } from "path";
+import {Client, Collection, GatewayIntentBits, Partials, PermissionFlagsBits,} from "discord.js";
+import {Command, SlashCommand} from "./types";
+import {config} from "dotenv";
+import {readdirSync} from "fs";
+import {join} from "path";
+
+const { Guilds, MessageContent, GuildMessages, GuildMembers, DirectMessages } = GatewayIntentBits
+const client = new Client({intents:[Guilds, MessageContent, GuildMessages, GuildMembers, DirectMessages], partials: [Partials.Channel]});
 
 config()
 
