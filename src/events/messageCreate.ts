@@ -10,20 +10,27 @@ import {
 } from "../messages/messages";
 import {join} from "path";
 import {ClubMembersList} from "../types/BrawlStarsAPIModel";
+import {isUserInGuild} from "../utils/utils";
 
 const event: BotEvent = {
     name: "messageCreate",
     execute: async (message: Message) => {
-        console.log(message.id + ' New message: ' + message.content);
         if (message.author.bot) return;
-        if (!message.guild && message.author.dmChannel) {       //TODO проверить состоит ли автор в дискорд канале
+        console.log(message.id + ' New message: ' + message.content);
+        if (!message.guild && message.author.dmChannel) {
             console.log(message.id + ' Not a guild message');
+            const client = message.client;
             const author = message.author;
+            if (await isUserInGuild(author, client)) {
+                console.log(message.id + ' Already in guild');
+                return;
+            }
+
             const dmChannel = author.dmChannel!;
             const brawlId = message.content.toUpperCase().match(/^#[A-Z\d]{8}$/)?.[0];
 
             if (!brawlId) {
-                console.log('no brawl id');
+                console.log(message.id + ' no brawl id');
                 await dmChannel.send({ content: ASK_FOR_INVITE_MESSAGE, files: [ join(__dirname, '../static/AskIdImage.jpg') ]}).then(console.log, console.error);
                 return;
             } else {
