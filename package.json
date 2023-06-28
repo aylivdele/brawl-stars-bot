@@ -5,9 +5,10 @@
     "main": "index.js",
     "scripts": {
         "copy": "node tools/copyStatic.js",
-        "build": "tsc.cmd && npm run copy",
+        "build": "tsc && npm run copy",
+        "build:windows": "tsc.cmd && npm run copy",
         "start": "node build/index.js",
-        "dev": "npm run build && npm run start"
+        "dev": "npm run build:windows && npm run start"
     },
     "keywords": [],
     "author": "MericcaN41",

@@ -6,7 +6,7 @@ export const isUserInGuild = (user: User, client: Client, guildId?: string): Pro
         .then(guild => guild.members.fetch(user)
             .then(guildMember => {
                 if (guildMember) {
-                    return guildMember.roles.highest.name !== '@everyone'
+                    return guildMember.roles.highest.name !== '@everyone';
                 }
                 return false;
             })
