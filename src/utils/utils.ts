@@ -1,4 +1,5 @@
 import {Client, Guild, User} from "discord.js";
+import {channel} from "diagnostics_channel";
 
 
 export const isUserInGuild = (user: User, client: Client, guildId?: string): Promise<boolean> => {

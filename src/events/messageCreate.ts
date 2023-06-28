@@ -1,16 +1,18 @@
-import { ChannelType, Message } from "discord.js";
+import {ChannelType, Message, TextChannel} from "discord.js";
 import { checkPermissions, getGuildOption, sendTimedMessage } from "../functions";
 import { BotEvent } from "../types";
 import mongoose from "mongoose";
 import {
     ASK_FOR_INVITE_MESSAGE,
-    ASK_ID_MESSAGE,
+    ASK_ID_MESSAGE, getWaitingForApproveNotification,
     NOT_MEMBER_MESSAGE,
     WAIT_FOR_APPROVE_MESSAGE
 } from "../messages/messages";
 import {join} from "path";
 import {ClubMembersList} from "../types/BrawlStarsAPIModel";
 import {isUserInGuild} from "../utils/utils";
+import {brawlApi} from "../api/brawlApi";
+import {channel} from "diagnostics_channel";
 
 const event: BotEvent = {
     name: "messageCreate",
@@ -34,13 +36,21 @@ const event: BotEvent = {
                 await dmChannel.send({ content: ASK_FOR_INVITE_MESSAGE, files: [ join(__dirname, '../static/AskIdImage.jpg') ]}).then(console.log, console.error);
                 return;
             } else {
-                const members : ClubMembersList = [];//TODO запрос к BrawlStartAPI /clubs/{clubTag}/members
-                const member = members.find(member => member.tag === brawlId);
+                const members : ClubMembersList | undefined = await brawlApi.getClubMembers();
+                const member = members?.find(member => member.tag === brawlId);
                 if (!member) {
                     dmChannel.send(NOT_MEMBER_MESSAGE);
                     return;
                 } else {
                     dmChannel.send(WAIT_FOR_APPROVE_MESSAGE);
+                    client.channels.fetch('1123632610887880784').then(channel => {
+                        const m = getWaitingForApproveNotification(author.username, member.name, member.tag);
+                        if (channel instanceof TextChannel) {
+                            channel.send(m);
+                        } else {
+                            console.log(m);
+                        }
+                    })
                     return;
                 }
             }
