@@ -35,8 +35,8 @@ const event: BotEvent = {
                 await dmChannel.send({ content: ASK_FOR_INVITE_MESSAGE, files: [ join(__dirname, '../static/AskIdImage.jpg') ]}).then(console.log, console.error);
                 return;
             } else {
-                const members : ClubMembersList | undefined = await brawlApi.getClubMembers();
-                const member = members?.find(member => member.tag === brawlId);
+                const members : ClubMembersList | undefined = await brawlApi.getClubMembers() ?? [];
+                const member = members.find(member => member.tag === brawlId);
                 if (!member) {
                     dmChannel.send(NOT_MEMBER_MESSAGE);
                     return;
