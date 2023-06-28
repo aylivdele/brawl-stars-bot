@@ -12,6 +12,10 @@ const fetchApi = (path: string, body?: any) : Promise<any> => fetch(
         body: body ? JSON.stringify(body) : undefined,
     })
     .then(response => response.json())
+    .then(json => {
+        console.log(`brawlApi result path: ${ path }, body: ${ JSON.stringify(body) }, result: ${ JSON.stringify(json) }`);
+        return json;
+    })
     .catch(error => {
         console.error(`brawlApi error path: ${ path }, body: ${ JSON.stringify(body) }`)
         console.error(error);

@@ -26,7 +26,7 @@ try {
 
 console.log('Logging')
 client.login(process.env.TOKEN)
-    .then(() => client.user?.setPresence({activities: [{ name: 'Brawl stars', type: 0 }]}))
+    .then(() => client.user?.setPresence({activities: [{ name: 'Brawl Stars', type: 0 }]}))
     .then(() => client.user?.setAvatar(join(__dirname, 'static/HankAvatar.png')))
     .catch(error => {
     console.error('Login exception');
