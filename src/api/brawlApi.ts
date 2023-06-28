@@ -22,7 +22,11 @@ const axiosInstance = axios.create({ baseURL: BASE_URL, ...config });
     });*/
 
 const onResolve = (value: AxiosResponse) => {
-    console.log(JSON.stringify(value));
+    try {
+        console.log(JSON.stringify(value.data));
+    } catch (e) {
+
+    }
     return (value.status >= 200 && value.status < 300) ? value.data : undefined;
 }
 
@@ -31,10 +35,14 @@ const onReject = (reason: any) => {
     return undefined;
 }
 
+const defaultClubTag = process.env.BRAWL_CLUB_TAG;
+console.log(defaultClubTag);
+
 export const brawlApi = {
     getClubMembers: (clubTag?: string) : Promise<ClubMembersList | undefined> => {
-        return axiosInstance.get(`clubs/${encodeURIComponent(clubTag ?? process.env.BRAWL_CLUB_TAG as string)}/members`)
+        return axiosInstance.get(`clubs/${clubTag ?? defaultClubTag}/members`)
             .then(onResolve)
+            .then(data => data.items)
             .catch(onReject);
     }
 }
