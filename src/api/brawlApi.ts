@@ -1,8 +1,8 @@
 import {ClubMembersList} from "../types/BrawlStarsAPIModel";
-import {response} from "express";
+import fetch from "node-fetch";
 
 const BASE_URL = 'https://api.brawlstars.com/v1/';
-const fetchApi = (path: string, body?: any) => fetch(
+const fetchApi = (path: string, body?: any) : Promise<any> => fetch(
     BASE_URL + path,
     {
         headers: { Authentication: `Bearer ${process.env.BRAWL_API_TOKEN}`, Accept: 'application/json'},

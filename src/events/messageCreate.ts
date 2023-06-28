@@ -12,7 +12,6 @@ import {join} from "path";
 import {ClubMembersList} from "../types/BrawlStarsAPIModel";
 import {isUserInGuild} from "../utils/utils";
 import {brawlApi} from "../api/brawlApi";
-import {channel} from "diagnostics_channel";
 
 const event: BotEvent = {
     name: "messageCreate",
