@@ -1,5 +1,7 @@
 import {ClubMembersList} from "../types/BrawlStarsAPIModel";
-import fetch from "node-fetch";
+import { RequestInfo, RequestInit } from "node-fetch";
+
+const fetch = (url: RequestInfo, init?: RequestInit) =>  import("node-fetch").then(({ default: fetch }) => fetch(url, init));
 
 const BASE_URL = 'https://api.brawlstars.com/v1/';
 const fetchApi = (path: string, body?: any) : Promise<any> => fetch(
