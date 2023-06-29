@@ -1,4 +1,4 @@
-import {ChannelType, Message, TextChannel} from "discord.js";
+import {BaseGuildTextChannel, ChannelType, Message, NewsChannel, TextChannel, VoiceChannel} from "discord.js";
 import { checkPermissions, getGuildOption, sendTimedMessage } from "../functions";
 import { BotEvent } from "../types";
 import mongoose from "mongoose";
@@ -10,7 +10,7 @@ import {
 } from "../messages/messages";
 import {join} from "path";
 import {ClubMembersList} from "../types/BrawlStarsAPIModel";
-import {isUserInGuild} from "../utils/utils";
+import {getUserFromGuild} from "../utils/utils";
 import {brawlApi} from "../api/brawlApi";
 
 const event: BotEvent = {
@@ -22,7 +22,8 @@ const event: BotEvent = {
             console.log(message.id + ' Not a guild message');
             const client = message.client;
             const author = message.author;
-            if (await isUserInGuild(author, client)) {
+            const guildMember = await getUserFromGuild(author, client);
+            if (guildMember && guildMember.roles.highest.name !== '@everyone') {
                 console.log(message.id + ' Already in guild');
                 return;
             }
@@ -42,6 +43,17 @@ const event: BotEvent = {
                     return;
                 } else {
                     dmChannel.send(WAIT_FOR_APPROVE_MESSAGE);
+                    if (!guildMember) {
+                        client.channels.fetch('1123674234158317700').then(channel => {
+                            if (channel instanceof BaseGuildTextChannel) {
+                                return channel.createInvite({ maxUses: 1, targetUser: author});
+                            }
+                            return undefined;
+                        }).then(invite => {
+                            if (invite) dmChannel.send(`Твое приглашение: ${ invite }`)
+                        });
+                    }
+
                     client.channels.fetch('1123632610887880784').then(channel => {
                         const m = getWaitingForApproveNotification(author.username, member.name, member.tag);
                         if (channel instanceof TextChannel) {
