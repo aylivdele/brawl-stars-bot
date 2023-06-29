@@ -47,11 +47,7 @@ const event: BotEvent = {
                     client.channels.fetch('1123632610887880784').then(channel => {
                         const m = getWaitingForApproveNotification(author.username, member.name, member.tag);
                         if (channel instanceof TextChannel) {
-                            channel.send(m).then(mes => {
-                                mes.react('✅');
-                                mes.react('❌');
-                                mes.fetch();
-                            });
+                            channel.send(m);
                         } else {
                             console.log(m);
                         }
