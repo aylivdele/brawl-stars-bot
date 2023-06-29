@@ -48,8 +48,8 @@ const event: BotEvent = {
                         const m = getWaitingForApproveNotification(author.username, member.name, member.tag);
                         if (channel instanceof TextChannel) {
                             channel.send(m).then(mes => {
-                                mes.react(':white_check_mark:');
-                                mes.react(':x:');
+                                mes.react('✅');
+                                mes.react('❌');
                             });
                         } else {
                             console.log(m);
