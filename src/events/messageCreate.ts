@@ -43,16 +43,6 @@ const event: BotEvent = {
                     return;
                 } else {
                     dmChannel.send(WAIT_FOR_APPROVE_MESSAGE);
-                    if (!guildMember) {
-                        client.channels.fetch('1123674234158317700').then(channel => {
-                            if (channel instanceof BaseGuildTextChannel) {
-                                return channel.createInvite({ maxUses: 1, targetUser: author});
-                            }
-                            return undefined;
-                        }).then(invite => {
-                            if (invite) dmChannel.send(`Твое приглашение: ${ invite }`)
-                        });
-                    }
 
                     client.channels.fetch('1123632610887880784').then(channel => {
                         const m = getWaitingForApproveNotification(author.username, member.name, member.tag);
