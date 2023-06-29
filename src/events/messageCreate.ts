@@ -50,6 +50,7 @@ const event: BotEvent = {
                             channel.send(m).then(mes => {
                                 mes.react('✅');
                                 mes.react('❌');
+                                mes.fetch();
                             });
                         } else {
                             console.log(m);
